@@ -147,4 +147,6 @@ Para contribuir al proyecto:
 
 ## 👨‍💻 Autor
 
-**Myshelluwu** - [GitHub](https://github.com/Myshelluwu)
+**Michelle Sanchez**
+- GitHub:  [Myshelluwu](https://github.com/Myshelluwu)
+- LinkedIn: [Michelle Sánchez Barba](https://www.linkedin.com/in/myshell-sanchez/)
