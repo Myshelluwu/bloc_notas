@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bloc de Notas - Aplicación SOA</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📝 Bloc de Notas</h1>
+            <p>Aplicación de notas en tiempo real con WebSockets</p>
+            <a href="/admin" class="admin-link" title="Panel de Administración">
+                <i class="fas fa-cogs"></i> Admin
+            </a>
+        </header>
+
+        <div class="note-editor">
+            <h2>Crear Nueva Nota</h2>
+            <input type="text" id="note-title" placeholder="Título de la nota..." maxlength="100">
+            <textarea id="note-content" placeholder="Escribe el contenido de tu nota aquí..." maxlength="1000"></textarea>
+            <div class="button-group">
+                <button id="save-note">💾 Guardar Nota</button>
+                <button id="cancel-edit" style="display: none;">❌ Cancelar</button>
+            </div>
+            <div id="status-message"></div>
+        </div>
+
+        <div class="notes-list">
+            <h2>Mis Notas</h2>
+            <div id="notes-container">
+                <p id="loading-message">Cargando notas...</p>
+            </div>
+        </div>
+
+        <div class="connection-status">
+            <div id="connection-indicator">
+                <span id="status-text">Conectando...</span>
+                <span id="status-dot"></span>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

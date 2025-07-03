@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración - Bloc de Notas</title>
+    <link rel="stylesheet" href="admin-styles.css">
+    <script src="/socket.io/socket.io.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fas fa-cogs"></i> Panel</h2>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item active" data-tab="dashboard">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </li>
+                <li class="nav-item" data-tab="notes">
+                    <i class="fas fa-sticky-note"></i>
+                    <span>Notas</span>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-bar">
+                <h1 id="page-title">Dashboard</h1>
+                <div class="connection-status">
+                    <span id="server-status">Conectando...</span>
+                    <div id="status-indicator"></div>
+                </div>
+            </header>
+
+            <!-- Dashboard Tab -->
+            <div id="dashboard" class="tab-content active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-sticky-note"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="total-notes">0</h3>
+                            <p>Total de Notas</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="active-clients">0</h3>
+                            <p>Clientes Activos</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="uptime">00:00:00</h3>
+                            <p>Tiempo Activo</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="charts-section">
+                    <div class="recent-activity">
+                        <h3>Últimas Actividades</h3>
+                        <div id="recent-activities" class="activity-list">
+                            <p>Cargando actividades...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notes Tab -->
+            <div id="notes" class="tab-content">
+                <div class="tab-header">
+                    <h2>Gestión de Notas</h2>
+                    <div class="search-bar">
+                        <input type="text" id="note-search" placeholder="Buscar notas...">
+                        <i class="fas fa-search"></i>
+                    </div>
+                </div>
+                
+                <div class="notes-filters">
+                    <select id="sort-notes">
+                        <option value="newest">Más Recientes</option>
+                        <option value="oldest">Más Antiguas</option>
+                        <option value="title">Por Título</option>
+                    </select>
+                    <button id="refresh-notes" class="btn-secondary">
+                        <i class="fas fa-sync-alt"></i> Actualizar
+                    </button>
+                </div>
+
+                <div class="notes-table-container">
+                    <table class="notes-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Título</th>
+                                <th>Contenido</th>
+                                <th>Fecha</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="notes-table-body">
+                            <tr>
+                                <td colspan="5">Cargando notas...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Clients Tab -->
+            <div id="clients" class="tab-content">
+                <div class="tab-header">
+                    <h2>Clientes Conectados</h2>
+                    <div class="client-stats">
+                        <span id="total-clients">0 clientes conectados</span>
+                    </div>
+                </div>
+
+                <div class="clients-grid" id="clients-container">
+                    <div class="client-card">
+                        <p>Cargando clientes...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Logs Tab -->
+            <div id="logs" class="tab-content">
+                <div class="tab-header">
+                    <h2>Logs del Servidor</h2>
+                    <div class="log-controls">
+                        <button id="clear-logs" class="btn-danger">
+                            <i class="fas fa-trash"></i> Limpiar Logs
+                        </button>
+                        <button id="export-logs" class="btn-secondary">
+                            <i class="fas fa-download"></i> Exportar
+                        </button>
+                    </div>
+                </div>
+
+                <div class="log-filters">
+                    <select id="log-level">
+                        <option value="all">Todos los niveles</option>
+                        <option value="info">Info</option>
+                        <option value="warning">Warning</option>
+                        <option value="error">Error</option>
+                    </select>
+                    <input type="text" id="log-search" placeholder="Buscar en logs...">
+                </div>
+
+                <div class="logs-container">
+                    <div id="logs-content" class="logs-content">
+                        <p>Cargando logs...</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal para editar notas -->
+    <div id="edit-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Editar Nota</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="edit-title" placeholder="Título de la nota">
+                <textarea id="edit-content" placeholder="Contenido de la nota"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button id="save-edit" class="btn-primary">Guardar</button>
+                <button id="cancel-edit" class="btn-secondary">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html> 
